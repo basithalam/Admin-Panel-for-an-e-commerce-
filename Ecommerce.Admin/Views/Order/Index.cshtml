@@ -1,0 +1,42 @@
+@model IEnumerable<Ecommerce.Domain.Entities.Order>
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="section-header">
+    <div class="section-title">Orders</div>
+    <div class="section-subtitle">Recent orders (latest first)</div>
+}</div>
+
+<div class="table-responsive dashboard-card p-3">
+    <table class="table table-dark table-borderless align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>@o.OrderId</td>
+                <td>@o.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@o.CustomerName</td>
+                <td><span class="badge bg-info">@o.Status</span></td>
+                <td>@o.TotalAmount.ToString("C")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@o.OrderId" class="btn btn-sm btn-primary">
+                        <i class="bi bi-eye"></i> View
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+

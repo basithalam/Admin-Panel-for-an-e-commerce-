@@ -1,0 +1,76 @@
+@model Ecommerce.Admin.Models.OrderDetailsViewModel
+@{
+    ViewData["Title"] = $"Order #" + Model.Order.OrderId;
+}
+
+<div class="section-header">
+    <div class="section-title">Order #@Model.Order.OrderId</div>
+    <div class="section-subtitle">@Model.Order.CustomerName — @Model.Order.OrderDate.ToString("yyyy-MM-dd HH:mm")</div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-4">
+        <div class="dashboard-card p-3 h-100">
+            <div class="section-header">
+                <div class="section-title">Summary</div>
+                <div class="section-subtitle">Status & payment</div>
+            </div>
+            <div class="mb-2">Status: <span class="badge bg-info">@Model.Order.Status</span></div>
+            <div class="mb-2">Total: @Model.Order.TotalAmount.ToString("C")</div>
+            <div class="mb-3">Email: @Model.Order.CustomerEmail</div>
+            <div class="mb-3">Phone: @Model.Order.CustomerPhone</div>
+            <div class="mb-3">Ship to: @Model.Order.ShippingAddress, @Model.Order.City, @Model.Order.PostalCode, @Model.Order.Country</div>
+
+            <form asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+                <input type="hidden" name="id" value="@Model.Order.OrderId" />
+                <select name="status" class="form-select form-select-sm" style="max-width:220px;">
+                    @foreach (var s in Model.AllowedStatuses)
+                    {
+                        <option value="@s" selected="@(Model.Order.Status == s)">@s</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-arrow-repeat"></i> Update</button>
+            </form>
+
+            <form asp-action="Delete" method="post" class="mt-3">
+                <input type="hidden" name="id" value="@Model.Order.OrderId" />
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this order?');">
+                    <i class="bi bi-trash"></i> Delete Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+        <div class="dashboard-card p-3 h-100">
+            <div class="section-header">
+                <div class="section-title">Items</div>
+                <div class="section-subtitle">Order line items</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-borderless align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var i in Model.Items)
+                    {
+                        <tr>
+                            <td>@i.ProductName</td>
+                            <td>@i.Price.ToString("C")</td>
+                            <td>@i.Quantity</td>
+                            <td>@i.TotalPrice.ToString("C")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
