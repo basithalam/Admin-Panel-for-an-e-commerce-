@@ -1,48 +1,129 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+:root {
+  --sidebar-bg: linear-gradient(180deg, #111827, #020617);
+  --sidebar-text: #e5e7eb;
+  --sidebar-muted: #9ca3af;
+  --content-bg: #0f172a;
+  --border: rgba(148, 163, 184, 0.3);
 }
 
-a {
-  color: #0077cc;
+.admin-body {
+  background: var(--content-bg);
+  color: #e5e7eb;
+  min-height: 100vh;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.admin-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.admin-sidebar {
+  background: var(--sidebar-bg);
+  padding: 1.25rem 1rem;
+  border-right: 1px solid var(--border);
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+.brand-icon {
+  width: 34px;
+  height: 34px;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+.admin-sidebar .nav-link {
+  color: var(--sidebar-muted);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+.admin-sidebar .nav-link.active,
+.admin-sidebar .nav-link:hover {
+  color: #f9fafb;
+  background-color: rgba(59, 130, 246, 0.2);
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+.admin-content {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
+
+.admin-topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.admin-main {
+  padding: 1rem 1.5rem;
+}
+
+.admin-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.dashboard-card {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(18px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.9);
+  border-color: rgba(96, 165, 250, 0.8);
+}
+
+.dashboard-card-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.dashboard-card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f9fafb;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.section-subtitle {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.metric-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-blue { background-color: #2563eb; color: #ffffff; }
+.metric-teal { background-color: #22d3ee; color: #0c4a6e; }
+.metric-green { background-color: #22c55e; color: #052e1e; }
+.metric-yellow { background-color: #f59e0b; color: #111827; }
+.metric-red { background-color: #ef4444; color: #ffffff; }
+.metric-gray { background-color: #e5e7eb; color: #111827; }

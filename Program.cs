@@ -45,6 +45,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Gene
 builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Product repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Category repository
 builder.Services.AddScoped<Ecommerce.Application.Interfaces.IProductService, Ecommerce.Application.Services.ProductService>(); // New Product service
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Keep existing non-product services for storefront
 builder.Services.AddScoped<ICartService, CartService>();

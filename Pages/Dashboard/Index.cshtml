@@ -4,37 +4,378 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container my-4">
-    <h1 class="mb-4">Dashboard</h1>
+<style>
+    .dashboard-wrapper {
+        min-height: calc(100vh - 80px);
+    }
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Cart Items</h5>
-                    <p class="card-text">@Model.CartItemCount item(s) in your cart</p>
-                    <a asp-page="/Cart/Index" class="btn btn-primary">Go to Cart</a>
+    .dashboard-sidebar {
+        background: linear-gradient(180deg, #111827, #020617);
+        color: #e5e7eb;
+    }
+
+    .dashboard-sidebar .nav-link {
+        color: #9ca3af;
+        border-radius: 0.5rem;
+        padding: 0.6rem 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .dashboard-sidebar .nav-link.active,
+    .dashboard-sidebar .nav-link:hover {
+        color: #f9fafb;
+        background-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .dashboard-sidebar .nav-link i {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-main {
+        background: radial-gradient(circle at top left, #1d4ed8 0, transparent 55%), #0f172a;
+        color: #e5e7eb;
+    }
+
+    .dashboard-card {
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(18px);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 28px 60px rgba(15, 23, 42, 0.9);
+        border-color: rgba(96, 165, 250, 0.8);
+    }
+
+    .dashboard-card-title {
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9ca3af;
+        margin-bottom: 0.25rem;
+    }
+
+    .dashboard-card-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #f9fafb;
+    }
+
+    .dashboard-card-subtitle {
+        font-size: 0.85rem;
+        color: #9ca3af;
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .chip-success {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #4ade80;
+    }
+
+    .chip-warning {
+        background-color: rgba(234, 179, 8, 0.1);
+        color: #facc15;
+    }
+
+    .chip-info {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #60a5fa;
+    }
+
+    .mini-chart {
+        height: 48px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(96, 165, 250, 0.2), rgba(59, 130, 246, 0.7));
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mini-chart::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 999px;
+        border: 1px dashed rgba(191, 219, 254, 0.6);
+        opacity: 0.6;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .activity-item:last-child {
+        border-bottom: 0;
+    }
+
+    .blur-layer {
+        background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.25), transparent 55%);
+    }
+    .section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+    .section-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+    .section-subtitle {
+        color: #9ca3af;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container-fluid dashboard-wrapper">
+    <div class="row min-vh-100">
+        <div class="col-12 col-md-3 col-lg-2 px-3 py-4 dashboard-sidebar">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width:34px;height:34px;">
+                        <i class="bi bi-bag-check-fill"></i>
+                    </span>
+                    <div>
+                        <div class="fw-semibold">E-Commerce</div>
+                        <div class="text-muted" style="font-size:0.78rem;">Storefront Analytics</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Browse Products</h5>
-                    <p class="card-text">Explore all categories and products</p>
-                    <a asp-page="/Products/Index" class="btn btn-outline-primary">View Products</a>
-                </div>
+
+            <nav class="mb-4">
+                <p class="text-uppercase text-muted mb-2" style="font-size:0.75rem;">Overview</p>
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link active" asp-page="/Dashboard/Index">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Products/Index">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Cart/Index">
+                            <i class="bi bi-cart3"></i>
+                            <span>Cart</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Checkout/Index">
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <span>Checkout</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Invoice/Index">
+                            <i class="bi bi-receipt"></i>
+                            <span>Invoices</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div>
+                <p class="text-uppercase text-muted mb-2" style="font-size:0.75rem;">Shortcuts</p>
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Index">
+                            <i class="bi bi-house-door"></i>
+                            <span>Back to Storefront</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Featured</h5>
-                    <p class="card-text">See highlighted items on the home page</p>
-                    <a asp-page="/Index" class="btn btn-outline-secondary">Home</a>
+
+        <div class="col-12 col-md-9 col-lg-10 p-4 p-lg-5 dashboard-main position-relative">
+            <div class="position-absolute top-0 start-0 end-0 bottom-0 blur-layer opacity-75"></div>
+            <div class="position-relative">
+                <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+                    <div>
+                        <h1 class="fw-semibold mb-1">Welcome back</h1>
+                        <p class="text-muted mb-0" style="max-width:480px;">
+                            Live snapshot of your store performance, orders, and inventory health.
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="chip chip-info">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <span>Cart items: @Model.CartItemCount</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <div class="section-title">Overview</div>
+                    <div class="section-subtitle">Key store metrics</div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="dashboard-card p-3 h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <div class="dashboard-card-title">Total Revenue</div>
+                                    <div class="dashboard-card-value">@Model.TotalRevenue.ToString("C")</div>
+                                </div>
+                                <span class="chip chip-success">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                    <span>Active</span>
+                                </span>
+                            </div>
+                            <div class="mini-chart w-100"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="dashboard-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="dashboard-card-title">Total Orders</div>
+                                    <div class="dashboard-card-value">@Model.TotalOrders</div>
+                                </div>
+                                <span class="chip chip-info">
+                                    <i class="bi bi-bag-check"></i>
+                                    <span>Store</span>
+                                </span>
+                            </div>
+                            <p class="dashboard-card-subtitle mb-1">Orders placed across the storefront.</p>
+                            <div class="d-flex align-items-center justify-content-between" style="font-size:0.82rem;">
+                                <span class="text-success d-flex align-items-center gap-1">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                    <span>Healthy volume</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="dashboard-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="dashboard-card-title">Products Online</div>
+                                    <div class="dashboard-card-value">@Model.TotalProducts</div>
+                                </div>
+                                <span class="chip chip-warning">
+                                    <i class="bi bi-box"></i>
+                                    <span>Catalog</span>
+                                </span>
+                            </div>
+                            <p class="dashboard-card-subtitle mb-1">Total active products in your catalog.</p>
+                            <div class="d-flex align-items-center justify-content-between" style="font-size:0.82rem;">
+                                <span class="text-warning d-flex align-items-center gap-1">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <span>@Model.LowStockProductCount low stock items</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="dashboard-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="dashboard-card-title">Orders Today</div>
+                                    <div class="dashboard-card-value">@Model.TodayOrders</div>
+                                </div>
+                                <span class="chip chip-info">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Today</span>
+                                </span>
+                            </div>
+                            <p class="dashboard-card-subtitle mb-1">New orders placed in the last 24 hours.</p>
+                            <div class="d-flex align-items-center justify-content-between" style="font-size:0.82rem;">
+                                <span class="text-muted">Track fresh demand in real-time.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header mt-2">
+                    <div class="section-title">Activity</div>
+                    <div class="section-subtitle">Live customer journey and quick actions</div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-12 col-xl-7">
+                        <div class="dashboard-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <div class="dashboard-card-title">Storefront Activity</div>
+                                    <div class="fw-semibold text-light">Live customer journey</div>
+                                </div>
+                                <span class="chip chip-info">
+                                    <i class="bi bi-circle-fill" style="font-size:0.6rem;"></i>
+                                    <span>Live</span>
+                                </span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-circle bg-primary" style="width:10px;height:10px;"></span>
+                                    <span>Customers browsing products</span>
+                                </div>
+                                <span class="text-muted" style="font-size:0.82rem;">Storefront</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-circle bg-success" style="width:10px;height:10px;"></span>
+                                    <span>Items being added to cart</span>
+                                </div>
+                                <span class="text-muted" style="font-size:0.82rem;">Shopping journey</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-circle bg-warning" style="width:10px;height:10px;"></span>
+                                    <span>Checkouts in progress</span>
+                                </div>
+                                <span class="text-muted" style="font-size:0.82rem;">Payments</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-5">
+                        <div class="dashboard-card p-3 h-100">
+                            <div class="section-header">
+                                <div class="section-title">Shortcuts</div>
+                                <div class="section-subtitle">Navigate your store</div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a asp-page="/Products/Index" class="btn btn-primary d-flex justify-content-between align-items-center">
+                                    <span>Manage products</span>
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                                <a asp-page="/Cart/Index" class="btn btn-outline-light d-flex justify-content-between align-items-center">
+                                    <span>Review current cart</span>
+                                    <span class="badge bg-danger">@Model.CartItemCount</span>
+                                </a>
+                                <a asp-page="/Checkout/Index" class="btn btn-outline-light d-flex justify-content-between align-items-center">
+                                    <span>Go to checkout</span>
+                                    <i class="bi bi-credit-card"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
