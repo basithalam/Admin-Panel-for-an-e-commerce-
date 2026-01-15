@@ -4,11 +4,22 @@
 }
 
 <div class="container-fluid">
-    <div class="section-header">
-        <div class="section-title">Overview</div>
-        <div class="section-subtitle">Store status at a glance</div>
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+        <div>
+            <div class="section-title mb-1">Welcome back</div>
+            <div class="section-subtitle">High-level snapshot of how your store is performing today</div>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-success">
+                <i class="bi bi-receipt-cutoff"></i> View orders
+            </a>
+            <a asp-controller="Product" asp-action="Create" class="btn btn-sm btn-info">
+                <i class="bi bi-plus-lg"></i> Add product
+            </a>
+        </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
         <div class="col">
             <div class="dashboard-card p-3 h-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
@@ -67,37 +78,58 @@
         </div>
     </div>
 
-    <div class="section-header mt-4">
-        <div class="section-title">Operations</div>
-        <div class="section-subtitle">Today's activity and stock health</div>
-    </div>
-    <div class="row row-cols-1 row-cols-xl-2 g-4">
-        <div class="col">
+    <div class="row g-4">
+        <div class="col-12 col-xl-7">
             <div class="dashboard-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="metric-icon metric-gray"><i class="bi bi-clock-history"></i></span>
-                        <div>
-                            <div class="dashboard-card-title">Today Orders</div>
-                            <div class="dashboard-card-value">@Model.TodayOrders</div>
+                <div class="section-header">
+                    <div class="section-title">Today&apos;s activity</div>
+                    <div class="section-subtitle">Quick look at what&apos;s happening right now</div>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col">
+                        <div class="p-3 rounded-3 border border-opacity-25 border-primary bg-opacity-10 bg-primary d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-uppercase small text-light text-opacity-75">New orders</div>
+                                <div class="fs-3 fw-bold">@Model.TodayOrders</div>
+                            </div>
+                            <span class="metric-icon metric-gray"><i class="bi bi-clock-history"></i></span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="p-3 rounded-3 border border-opacity-25 border-warning bg-opacity-10 bg-warning d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-uppercase small text-dark text-opacity-75">Low stock</div>
+                                <div class="fs-3 fw-bold">@Model.LowStockProducts</div>
+                            </div>
+                            <span class="metric-icon metric-red"><i class="bi bi-exclamation-triangle"></i></span>
                         </div>
                     </div>
                 </div>
-                <div class="text-muted" style="font-size:0.85rem;">New orders placed in last 24 hours</div>
+                <div class="mt-3 text-muted" style="font-size:0.85rem;">
+                    Keep an eye on low inventory items to avoid stock-outs and missed sales.
+                </div>
             </div>
         </div>
-        <div class="col">
+        <div class="col-12 col-xl-5">
             <div class="dashboard-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="metric-icon metric-red"><i class="bi bi-exclamation-triangle"></i></span>
-                        <div>
-                            <div class="dashboard-card-title">Low Stock Products</div>
-                            <div class="dashboard-card-value">@Model.LowStockProducts</div>
-                        </div>
-                    </div>
+                <div class="section-header">
+                    <div class="section-title">Shortcuts</div>
+                    <div class="section-subtitle">Most common admin actions</div>
                 </div>
-                <div class="text-muted" style="font-size:0.85rem;">Items that need restock (≤ 5)</div>
+                <div class="d-flex flex-column gap-2">
+                    <a asp-controller="Order" asp-action="Index" class="btn btn-primary btn-sm d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-receipt-cutoff me-2"></i>Review recent orders</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-secondary btn-sm d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-box-seam me-2"></i>Manage products</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-info btn-sm d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-tags me-2"></i>Manage categories</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
