@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Ecommerce.Domain.Entities;
 using EcommerceRazorApp.Models;
+using Ecommerce.Application.Interfaces;
 using EcommerceRazorApp.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,18 +10,18 @@ namespace EcommerceRazorApp.Pages.Products
 {
     public class ProductDetailsModel : PageModel
     {
-        private readonly IProductService _productService;
+        private readonly Ecommerce.Application.Interfaces.IProductService _productService;
         private readonly ICartService _cartService;
         private readonly ILogger<ProductDetailsModel> _logger;
 
-        public ProductDetailsModel(IProductService productService, ICartService cartService, ILogger<ProductDetailsModel> logger)
+        public ProductDetailsModel(Ecommerce.Application.Interfaces.IProductService productService, ICartService cartService, ILogger<ProductDetailsModel> logger)
         {
             _productService = productService;
             _cartService = cartService;
             _logger = logger;
         }
 
-        public Product? Product { get; set; }
+        public Ecommerce.Domain.Entities.Product? Product { get; set; }
 
         [BindProperty]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]

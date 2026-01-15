@@ -1,27 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Ecommerce.Domain.Entities;
 using EcommerceRazorApp.Models;
+using Ecommerce.Application.Interfaces;
 using EcommerceRazorApp.Services.Interfaces;
 
 namespace EcommerceRazorApp.Pages.Products
 {
     public class ProductsIndexModel : PageModel
     {
-        private readonly IProductService _productService;
+        private readonly Ecommerce.Application.Interfaces.IProductService _productService;
         private readonly ICartService _cartService;
         private readonly ILogger<ProductsIndexModel> _logger;
 
         private const int PageSize = 6;
 
-        public ProductsIndexModel(IProductService productService, ICartService cartService, ILogger<ProductsIndexModel> logger)
+        public ProductsIndexModel(Ecommerce.Application.Interfaces.IProductService productService, ICartService cartService, ILogger<ProductsIndexModel> logger)
         {
             _productService = productService;
             _cartService = cartService;
             _logger = logger;
         }
 
-        public List<Product> Products { get; set; } = new();
-        public List<Category> Categories { get; set; } = new();
+        public List<Ecommerce.Domain.Entities.Product> Products { get; set; } = new();
+        public List<Ecommerce.Domain.Entities.Category> Categories { get; set; } = new();
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int TotalProducts { get; set; }

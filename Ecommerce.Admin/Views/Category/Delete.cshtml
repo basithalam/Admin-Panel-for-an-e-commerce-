@@ -1,0 +1,12 @@
+@model Ecommerce.Domain.Entities.Category
+@{
+    ViewData["Title"] = "Delete Category";
+}
+<h2>Delete Category</h2>
+<div class="alert alert-warning">Are you sure you want to delete this category?</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CategoryId" />
+    <p><strong>@Model.Name</strong></p>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+</form>

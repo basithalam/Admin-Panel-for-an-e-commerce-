@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using EcommerceRazorApp.Data;
+using Ecommerce.Infrastructure.Data;
+using Ecommerce.Infrastructure.Repositories;
+using Ecommerce.Application.Interfaces;
+using Ecommerce.Application.Services;
 using EcommerceRazorApp.Services.Interfaces;
 using EcommerceRazorApp.Services.Implementations;
 
@@ -8,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddRazorPages();
 
-// Configure Entity Framework Core with SQL Server
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Configure Entity Framework Core with SQL Server (Infrastructure DbContext)
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
@@ -28,8 +31,13 @@ builder.Services.AddSession(options =>
 // Register HttpContextAccessor for session access
 builder.Services.AddHttpContextAccessor();
 
-// Register Application Services with Dependency Injection
-builder.Services.AddScoped<IProductService, ProductService>();
+// Register repositories and services
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Generic repository
+builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Product repository
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Category repository
+builder.Services.AddScoped<Ecommerce.Application.Interfaces.IProductService, Ecommerce.Application.Services.ProductService>(); // New Product service
+
+// Keep existing non-product services for storefront
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
@@ -49,7 +57,7 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        var context = services.GetRequiredService<AppDbContext>();
 
         logger.LogInformation("Applying database migrations...");
         context.Database.Migrate();
