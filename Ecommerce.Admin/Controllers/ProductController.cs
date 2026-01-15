@@ -7,31 +7,31 @@ namespace Ecommerce.Admin.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly IProductRepository _productRepository; // Repository for products
-        private readonly ICategoryRepository _categoryRepository; // Repository for categories
+        private readonly IProductService _productService;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public ProductController(IProductService productService, ILogger<ProductController> logger)
         {
-            _productRepository = productRepository; // Inject product repo
-            _categoryRepository = categoryRepository; // Inject category repo
+            _productService = productService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            var products = await _productRepository.GetAllWithCategoryAsync(); // Load products with category
+            var products = await _productService.GetAllProductsAsync();
             return View(products);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var product = await _productRepository.GetByIdWithCategoryAsync(id); // Load single product
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null) return NotFound();
             return View(product);
         }
 
         public async Task<IActionResult> Create()
         {
-            await BindCategoriesAsync(); // Prepare category dropdown
+            await BindCategoriesAsync();
             return View(new Product());
         }
 
@@ -41,19 +41,49 @@ namespace Ecommerce.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await BindCategoriesAsync(); // Rebind categories on validation fail
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                _logger.LogWarning("Product creation failed due to validation errors: {Errors}", string.Join(", ", errors));
+                await BindCategoriesAsync();
                 return View(product);
             }
-            await _productRepository.AddAsync(product); // Add entity
-            await _productRepository.SaveChangesAsync(); // Persist
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _productService.CreateProductAsync(product);
+                TempData["Success"] = "Product saved successfully";
+                return RedirectToAction(nameof(Create));
+            }
+            catch (ArgumentException ex) when (ex.ParamName == nameof(Product.CategoryId))
+            {
+                ModelState.AddModelError(nameof(Product.CategoryId), ex.Message);
+                await BindCategoriesAsync();
+                return View(product);
+            }
+            catch (ArgumentException ex) when (ex.ParamName == nameof(Product.Price))
+            {
+                ModelState.AddModelError(nameof(Product.Price), ex.Message);
+                await BindCategoriesAsync();
+                return View(product);
+            }
+            catch (ArgumentException ex) when (ex.ParamName == nameof(Product.Stock))
+            {
+                ModelState.AddModelError(nameof(Product.Stock), ex.Message);
+                await BindCategoriesAsync();
+                return View(product);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Unable to save product. Please try again.";
+                ModelState.AddModelError(string.Empty, "Unable to save product. Please try again.");
+                await BindCategoriesAsync();
+                return View(product);
+            }
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id); // Load product
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null) return NotFound();
-            await BindCategoriesAsync(); // Bind categories
+            await BindCategoriesAsync();
             return View(product);
         }
 
@@ -61,20 +91,29 @@ namespace Ecommerce.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Product product)
         {
-            if (id != product.ProductId) return BadRequest(); // Ensure id matches
+            if (id != product.ProductId) return BadRequest();
             if (!ModelState.IsValid)
             {
-                await BindCategoriesAsync(); // Rebind dropdowns
+                await BindCategoriesAsync();
                 return View(product);
             }
-            await _productRepository.UpdateAsync(product); // Update entity
-            await _productRepository.SaveChangesAsync(); // Persist
+            try
+            {
+                await _productService.UpdateProductAsync(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product");
+                ModelState.AddModelError(string.Empty, $"Unable to update product: {ex.Message}");
+                await BindCategoriesAsync();
+                return View(product);
+            }
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _productRepository.GetByIdWithCategoryAsync(id); // Load with category
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null) return NotFound();
             return View(product);
         }
@@ -83,17 +122,14 @@ namespace Ecommerce.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id); // Load entity
-            if (product == null) return NotFound();
-            await _productRepository.RemoveAsync(product); // Remove entity
-            await _productRepository.SaveChangesAsync(); // Persist
+            await _productService.DeleteProductAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         private async Task BindCategoriesAsync()
         {
-            var categories = await _categoryRepository.GetAllAsync(); // Load categories
-            ViewBag.CategoryId = new SelectList(categories, nameof(Category.CategoryId), nameof(Category.Name)); // Build dropdown
+            var categories = await _productService.GetAllCategoriesAsync();
+            ViewBag.CategoryId = new SelectList(categories, nameof(Category.CategoryId), nameof(Category.Name));
         }
     }
 }

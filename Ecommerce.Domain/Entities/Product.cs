@@ -32,6 +32,6 @@ namespace Ecommerce.Domain.Entities
 
         // Navigation properties
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; } = null!;
+        public virtual Category? Category { get; set; }
     }
 }
