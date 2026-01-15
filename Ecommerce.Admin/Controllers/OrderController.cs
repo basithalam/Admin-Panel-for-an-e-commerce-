@@ -71,6 +71,31 @@ namespace Ecommerce.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdatePaymentStatus(int orderId, string paymentStatus)
+        {
+            var payment = (await _paymentRepository.FindAsync(p => p.OrderId == orderId)).FirstOrDefault();
+            if (payment == null)
+            {
+                TempData["Message"] = "Payment record not found for this order";
+                return RedirectToAction(nameof(Details), new { id = orderId });
+            }
+
+            var allowed = new[] { "Pending", "Completed", "Failed", "Refunded" };
+            if (!allowed.Contains(paymentStatus))
+            {
+                TempData["Message"] = "Invalid payment status";
+                return RedirectToAction(nameof(Details), new { id = orderId });
+            }
+
+            payment.PaymentStatus = paymentStatus;
+            await _paymentRepository.UpdateAsync(payment);
+            await _paymentRepository.SaveChangesAsync();
+            TempData["Message"] = $"Payment status updated to {paymentStatus}";
+            return RedirectToAction(nameof(Details), new { id = orderId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
@@ -83,4 +108,3 @@ namespace Ecommerce.Admin.Controllers
         }
     }
 }
-

@@ -15,6 +15,10 @@
                 <div class="section-title">Summary</div>
                 <div class="section-subtitle">Status & payment</div>
             </div>
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-info">@TempData["Message"]</div>
+            }
             <div class="mb-2">Status: <span class="badge bg-info">@Model.Order.Status</span></div>
             <div class="mb-2">Total: @Model.Order.TotalAmount.ToString("C")</div>
             <div class="mb-3">Email: @Model.Order.CustomerEmail</div>
@@ -31,6 +35,26 @@
                 </select>
                 <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-arrow-repeat"></i> Update</button>
             </form>
+
+            @if (Model.Payment != null)
+            {
+                <div class="mt-3">
+                    <div class="mb-2">Payment method: @Model.Payment.PaymentMethod</div>
+                    <div class="mb-2">Payment status: <span class="badge bg-secondary">@Model.Payment.PaymentStatus</span></div>
+                    <form asp-action="UpdatePaymentStatus" method="post" class="d-flex gap-2">
+                        <input type="hidden" name="orderId" value="@Model.Order.OrderId" />
+                        <select name="paymentStatus" class="form-select form-select-sm" style="max-width:220px;">
+                            @foreach (var s in Model.AllowedPaymentStatuses)
+                            {
+                                <option value="@s" selected="@(Model.Payment.PaymentStatus == s)">@s</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-light">
+                            <i class="bi bi-cash-coin"></i> Update payment
+                        </button>
+                    </form>
+                </div>
+            }
 
             <form asp-action="Delete" method="post" class="mt-3">
                 <input type="hidden" name="id" value="@Model.Order.OrderId" />
@@ -73,4 +97,3 @@
         </div>
     </div>
 </div>
-
