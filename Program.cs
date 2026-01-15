@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Infrastructure.Data;
 using Ecommerce.Infrastructure.Repositories;
+using EcommerceRazorApp.Data;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Services;
 using EcommerceRazorApp.Services.Interfaces;
@@ -13,6 +14,14 @@ builder.Services.AddRazorPages();
 
 // Configure Entity Framework Core with SQL Server (Infrastructure DbContext)
 builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
+    )
+);
+
+// Register ApplicationDbContext for storefront services
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
@@ -41,6 +50,7 @@ builder.Services.AddScoped<Ecommerce.Application.Interfaces.IProductService, Eco
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<EcommerceRazorApp.Services.Interfaces.IProductService, EcommerceRazorApp.Services.Implementations.ProductService>();
 
 // Configure Logging
 builder.Logging.ClearProviders();

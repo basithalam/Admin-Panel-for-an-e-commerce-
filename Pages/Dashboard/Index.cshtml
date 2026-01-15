@@ -1,0 +1,40 @@
+@page
+@model EcommerceRazorApp.Pages.Dashboard.DashboardIndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container my-4">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Cart Items</h5>
+                    <p class="card-text">@Model.CartItemCount item(s) in your cart</p>
+                    <a asp-page="/Cart/Index" class="btn btn-primary">Go to Cart</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Browse Products</h5>
+                    <p class="card-text">Explore all categories and products</p>
+                    <a asp-page="/Products/Index" class="btn btn-outline-primary">View Products</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Featured</h5>
+                    <p class="card-text">See highlighted items on the home page</p>
+                    <a asp-page="/Index" class="btn btn-outline-secondary">Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
