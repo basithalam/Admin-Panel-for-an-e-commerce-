@@ -69,7 +69,7 @@ namespace EcommerceRazorApp.Pages.Products
                 if (Quantity > product.Stock)
                 {
                     TempData["ErrorMessage"] = $"Only {product.Stock} units available.";
-                    return RedirectToPage(new { id });
+                    return RedirectToPage("/Products/Details", new { id });
                 }
 
                 var cartItem = new CartItem
@@ -84,7 +84,7 @@ namespace EcommerceRazorApp.Pages.Products
                 _cartService.AddToCart(cartItem);
                 TempData["SuccessMessage"] = $"{Quantity} x {product.Name} added to cart!";
 
-                return RedirectToPage(new { id });
+                return RedirectToPage("/Products/Details", new { id });
             }
             catch (Exception ex)
             {
@@ -115,7 +115,7 @@ namespace EcommerceRazorApp.Pages.Products
                 if (Quantity > product.Stock)
                 {
                     TempData["ErrorMessage"] = $"Only {product.Stock} units available.";
-                    return RedirectToPage(new { id });
+                    return RedirectToPage("/Products/Details", new { id });
                 }
 
                 var cartItem = new CartItem

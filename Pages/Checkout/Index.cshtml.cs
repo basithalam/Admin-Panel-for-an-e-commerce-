@@ -106,7 +106,7 @@ namespace EcommerceRazorApp.Pages.Checkout
                 if (payment.PaymentStatus == "Failed")
                 {
                     TempData["ErrorMessage"] = $"Payment failed: {payment.PaymentNotes}";
-                    return RedirectToPage();
+                    return RedirectToPage("/Checkout/Index");
                 }
 
                 // Clear cart
@@ -119,7 +119,7 @@ namespace EcommerceRazorApp.Pages.Checkout
             {
                 _logger.LogError(ex, "Error processing checkout");
                 TempData["ErrorMessage"] = "An error occurred while processing your order. Please try again.";
-                return RedirectToPage();
+                return RedirectToPage("/Checkout/Index");
             }
         }
     }

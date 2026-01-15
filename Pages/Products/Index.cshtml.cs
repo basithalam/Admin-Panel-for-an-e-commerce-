@@ -80,7 +80,7 @@ namespace EcommerceRazorApp.Pages.Products
                 if (product == null)
                 {
                     TempData["ErrorMessage"] = "Product not found.";
-                    return RedirectToPage(new { categoryId, sortBy, page });
+                    return RedirectToPage("/Products/Index", new { categoryId, sortBy, page });
                 }
 
                 var cartItem = new CartItem
@@ -95,13 +95,13 @@ namespace EcommerceRazorApp.Pages.Products
                 _cartService.AddToCart(cartItem);
                 TempData["SuccessMessage"] = $"{product.Name} added to cart!";
 
-                return RedirectToPage(new { categoryId, sortBy, page });
+                return RedirectToPage("/Products/Index", new { categoryId, sortBy, page });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding product to cart");
                 TempData["ErrorMessage"] = "Unable to add product to cart.";
-                return RedirectToPage(new { categoryId, sortBy, page });
+                return RedirectToPage("/Products/Index", new { categoryId, sortBy, page });
             }
         }
 
@@ -114,7 +114,7 @@ namespace EcommerceRazorApp.Pages.Products
                 if (product == null)
                 {
                     TempData["ErrorMessage"] = "Product not found.";
-                    return RedirectToPage();
+                    return RedirectToPage("/Products/Index");
                 }
 
                 var cartItem = new CartItem
@@ -133,7 +133,7 @@ namespace EcommerceRazorApp.Pages.Products
             {
                 _logger.LogError(ex, "Error in buy now");
                 TempData["ErrorMessage"] = "Unable to process request.";
-                return RedirectToPage();
+                return RedirectToPage("/Products/Index");
             }
         }
     }

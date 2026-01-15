@@ -42,7 +42,7 @@ namespace EcommerceRazorApp.Pages
                 if (product == null)
                 {
                     TempData["ErrorMessage"] = "Product not found.";
-                    return RedirectToPage();
+                    return RedirectToPage("/Index");
                 }
 
                 var cartItem = new CartItem
@@ -57,13 +57,13 @@ namespace EcommerceRazorApp.Pages
                 _cartService.AddToCart(cartItem);
                 TempData["SuccessMessage"] = $"{product.Name} added to cart!";
 
-                return RedirectToPage();
+                return RedirectToPage("/Index");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding product to cart");
                 TempData["ErrorMessage"] = "Unable to add product to cart.";
-                return RedirectToPage();
+                return RedirectToPage("/Index");
             }
         }
     }

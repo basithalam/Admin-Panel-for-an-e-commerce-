@@ -39,13 +39,13 @@ namespace EcommerceRazorApp.Pages.Cart
             {
                 _cartService.RemoveFromCart(productId);
                 TempData["SuccessMessage"] = "Item removed from cart.";
-                return RedirectToPage();
+                return RedirectToPage("/Cart/Index");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error removing item from cart");
                 TempData["ErrorMessage"] = "Unable to remove item.";
-                return RedirectToPage();
+                return RedirectToPage("/Cart/Index");
             }
         }
 
@@ -56,18 +56,18 @@ namespace EcommerceRazorApp.Pages.Cart
                 if (quantity < 1)
                 {
                     TempData["ErrorMessage"] = "Quantity must be at least 1.";
-                    return RedirectToPage();
+                    return RedirectToPage("/Cart/Index");
                 }
 
                 _cartService.UpdateQuantity(productId, quantity);
                 TempData["SuccessMessage"] = "Cart updated.";
-                return RedirectToPage();
+                return RedirectToPage("/Cart/Index");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating quantity");
                 TempData["ErrorMessage"] = "Unable to update quantity.";
-                return RedirectToPage();
+                return RedirectToPage("/Cart/Index");
             }
         }
     }
