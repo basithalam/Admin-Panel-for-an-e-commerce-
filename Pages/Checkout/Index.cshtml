@@ -1,0 +1,177 @@
+@page
+@model CheckoutIndexModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container my-4">
+    <h1 class="mb-4">
+        <i class="bi bi-credit-card"></i> Checkout
+    </h1>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.CartItems.Any())
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> Your cart is empty. Please add items before checkout.
+        </div>
+        <a asp-page="/Products/Index" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Browse Products
+        </a>
+    }
+    else
+    {
+        <form method="post">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Customer Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CustomerInfo.FullName" class="form-label"></label>
+                                    <input asp-for="CustomerInfo.FullName" class="form-control" placeholder="John Doe" />
+                                    <span asp-validation-for="CustomerInfo.FullName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CustomerInfo.Phone" class="form-label"></label>
+                                    <input asp-for="CustomerInfo.Phone" class="form-control" placeholder="+1234567890" />
+                                    <span asp-validation-for="CustomerInfo.Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CustomerInfo.Email" class="form-label"></label>
+                                <input asp-for="CustomerInfo.Email" class="form-control" placeholder="john@example.com" />
+                                <span asp-validation-for="CustomerInfo.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CustomerInfo.Address" class="form-label"></label>
+                                <input asp-for="CustomerInfo.Address" class="form-control" placeholder="123 Main Street" />
+                                <span asp-validation-for="CustomerInfo.Address" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CustomerInfo.City" class="form-label"></label>
+                                    <input asp-for="CustomerInfo.City" class="form-control" placeholder="New York" />
+                                    <span asp-validation-for="CustomerInfo.City" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="CustomerInfo.PostalCode" class="form-label"></label>
+                                    <input asp-for="CustomerInfo.PostalCode" class="form-control" placeholder="10001" />
+                                    <span asp-validation-for="CustomerInfo.PostalCode" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="CustomerInfo.Country" class="form-label"></label>
+                                    <input asp-for="CustomerInfo.Country" class="form-control" placeholder="USA" />
+                                    <span asp-validation-for="CustomerInfo.Country" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Payment Method</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="visaCard" value="Visa Card" asp-for="PaymentMethod" onclick="toggleCardInput(true)" />
+                                    <label class="form-check-label" for="visaCard">
+                                        <i class="bi bi-credit-card"></i> Dummy Visa Card
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="cod" value="Cash On Delivery" asp-for="PaymentMethod" onclick="toggleCardInput(false)" />
+                                    <label class="form-check-label" for="cod">
+                                        <i class="bi bi-cash"></i> Cash On Delivery
+                                    </label>
+                                </div>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+
+                            <div id="cardNumberSection" style="display: none;">
+                                <label asp-for="CardNumber" class="form-label"></label>
+                                <input asp-for="CardNumber" class="form-control" placeholder="4111 1111 1111 1111" maxlength="19" />
+                                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> Cards starting with 4 will be successful. Others will fail.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>@item.ProductName</strong>
+                                        <br>
+                                        <small class="text-muted">Qty: @item.Quantity x $@item.Price.ToString("N2")</small>
+                                    </div>
+                                    <span>$@item.TotalPrice.ToString("N2")</span>
+                                </div>
+                            }
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>$@Model.CartTotal.ToString("N2")</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong class="text-success fs-4">$@Model.CartTotal.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Place Order
+                        </button>
+                        <a asp-page="/Cart/Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleCardInput(show) {
+            var cardSection = document.getElementById('cardNumberSection');
+            cardSection.style.display = show ? 'block' : 'none';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            var visaRadio = document.getElementById('visaCard');
+            if (visaRadio && visaRadio.checked) {
+                toggleCardInput(true);
+            }
+        });
+    </script>
+}

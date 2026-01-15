@@ -1,0 +1,138 @@
+@page
+@model ProductsIndexModel
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container my-4">
+    <h1 class="mb-4">All Products</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mb-4">
+        <!-- Category Filter -->
+        <div class="col-md-4">
+            <form method="get">
+                <div class="input-group">
+                    <label class="input-group-text">Category</label>
+                    <select name="categoryId" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryId" selected="@(Model.SelectedCategoryId == category.CategoryId)">
+                                @category.Name
+                            </option>
+                        }
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Price Sort -->
+        <div class="col-md-4">
+            <form method="get">
+                <input type="hidden" name="categoryId" value="@Model.SelectedCategoryId" />
+                <div class="input-group">
+                    <label class="input-group-text">Sort By</label>
+                    <select name="sortBy" class="form-select" onchange="this.form.submit()">
+                        <option value="">Default</option>
+                        <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Price: Low to High</option>
+                        <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Price: High to Low</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4 text-end">
+            <p class="text-muted mt-2">
+                Showing @Model.Products.Count of @Model.TotalProducts products
+            </p>
+        </div>
+    </div>
+
+    @if (Model.Products.Any())
+    {
+        <div class="row g-4">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 250px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge bg-secondary mb-2 align-self-start">@product.Category.Name</span>
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-muted small flex-grow-1">
+                                @if (!string.IsNullOrEmpty(product.Description))
+                                {
+                                    @(product.Description.Substring(0, Math.Min(80, product.Description.Length)))@:...
+                                }
+                            </p>
+                            <div class="mb-2">
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle"></i> In Stock: @product.Stock units
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <h4 class="text-primary mb-0">$@product.Price.ToString("N2")</h4>
+                            </div>
+                            <div class="mt-3 d-grid gap-2">
+                                <a asp-page="/Products/Details" asp-route-id="@product.ProductId" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                <div class="btn-group">
+                                    <form method="post" class="flex-fill">
+                                        <input type="hidden" name="id" value="@product.ProductId" />
+                                        <button type="submit" asp-page-handler="AddToCart" class="btn btn-primary w-100">
+                                            <i class="bi bi-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                    <form method="post" class="flex-fill ms-2">
+                                        <input type="hidden" name="id" value="@product.ProductId" />
+                                        <button type="submit" asp-page-handler="BuyNow" class="btn btn-success w-100">
+                                            <i class="bi bi-lightning-fill"></i> Buy Now
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?page=@i&categoryId=@Model.SelectedCategoryId&sortBy=@Model.SortBy">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No products found.
+        </div>
+    }
+</div>

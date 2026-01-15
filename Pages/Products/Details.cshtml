@@ -1,0 +1,135 @@
+@page
+@model ProductDetailsModel
+@{
+    ViewData["Title"] = Model.Product?.Name ?? "Product Details";
+}
+
+<div class="container my-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Product != null)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-page="/Products/Index">Products</a></li>
+                <li class="breadcrumb-item active">@Model.Product.Name</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-6">
+                <img src="@Model.Product.ImageUrl" class="img-fluid rounded shadow" alt="@Model.Product.Name">
+            </div>
+
+            <div class="col-md-6">
+                <span class="badge bg-secondary mb-2">@Model.Product.Category.Name</span>
+                @if (Model.Product.IsFeatured)
+                {
+                    <span class="badge bg-warning text-dark mb-2">Featured</span>
+                }
+
+                <h1 class="mb-3">@Model.Product.Name</h1>
+
+                <div class="mb-3">
+                    <h2 class="text-primary">$@Model.Product.Price.ToString("N2")</h2>
+                </div>
+
+                <div class="mb-4">
+                    @if (Model.Product.Stock > 0)
+                    {
+                        <span class="badge bg-success fs-6">
+                            <i class="bi bi-check-circle"></i> In Stock (@Model.Product.Stock units available)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger fs-6">
+                            <i class="bi bi-x-circle"></i> Out of Stock
+                        </span>
+                    }
+                </div>
+
+                <div class="mb-4">
+                    <h5>Description</h5>
+                    <p class="text-muted">@Model.Product.Description</p>
+                </div>
+
+                @if (Model.Product.Stock > 0)
+                {
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Quantity</label>
+                            <div class="input-group" style="max-width: 200px;">
+                                <button type="button" class="btn btn-outline-secondary" onclick="decrementQuantity()">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" asp-for="Quantity" class="form-control text-center" min="1" max="@Model.Product.Stock" id="quantityInput" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="incrementQuantity(@Model.Product.Stock)">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" asp-page-handler="AddToCart" class="btn btn-primary btn-lg">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                            <button type="submit" asp-page-handler="BuyNow" class="btn btn-success btn-lg">
+                                <i class="bi bi-lightning-fill"></i> Buy Now
+                            </button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> This product is currently out of stock.
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <a asp-page="/Products/Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> Product not found.
+        </div>
+        <a asp-page="/Products/Index" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Back to Products
+        </a>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function incrementQuantity(max) {
+            var input = document.getElementById('quantityInput');
+            var value = parseInt(input.value) || 1;
+            if (value < max) {
+                input.value = value + 1;
+            }
+        }
+
+        function decrementQuantity() {
+            var input = document.getElementById('quantityInput');
+            var value = parseInt(input.value) || 1;
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        }
+    </script>
+}
